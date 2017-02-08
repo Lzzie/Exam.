@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.dao.PosDao">
+	
+	
+		<!--增加岗位-->
+	<insert id="addPos" parameterType="Map">
+	  <selectKey keyProperty="sort" resultType="java.lang.Long" order="BEFORE">
+		 	SELECT MAX(SORT)+1 SORT FROM POS
+	  </selectKey>
+		INSERT INTO POS(
+			POS_ID,
+			POS_NAME,
+			POS_SN,
+			ORG_ID,
+			POS_DES,
+			SORT
+		)
+		VALUES(
+			#{posId, jdbcType=VARCHAR },
+			#{posName, jdbcType=VARCHAR },
+			#{posSn, jdbcType=VARCHAR },
+			#{orgId, jdbcType=VARCHAR },
+			#{posDes, jdbcType=VARCHAR },
+			<if test="@Ognl@isNotBlank(sort)">
+				#{sort,  jdbcType=NUMERIC  }
+			</if>
+			<if test="@Ognl@isBlank(sort)">
+				0
+			</if>
+		)
+	</insert>
+	
+	<!--查询岗位-->
+	<select id="getPositions"  resultType="com.exam.bean.Pos">
+		select 
+			R.POS_ID,
+			R.POS_NAME,
+			R.POS_SN,
+			R.ORG_ID,
+			S.ORG_NAME,
+			R.POS_DES,
+			R.SORT
+		from POS R
+		join ORG S on R.ORG_ID=S.ORG_ID
+			<if test="@Ognl@isNotBlank(orgId)">
+				AND R.ORG_ID = #{orgId}
+			</if>
+	</select>
+	
+	
+		
+	<delete id="delPos" parameterType="Map">
+		DELETE FROM POS WHERE POS_ID = #{posId}
+	</delete>
+	
+	
+</mapper>

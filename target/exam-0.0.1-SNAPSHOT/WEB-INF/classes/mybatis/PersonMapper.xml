@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.dao.PersonDao">
+	
+	
+	
+	<!--增加人员信息-->
+	<insert id="addPerson" parameterType="Map">
+	  <selectKey keyProperty="sort" resultType="java.lang.Long" order="BEFORE">
+		 	SELECT MAX(SORT)+1 SORT FROM PERSON
+	  </selectKey>
+		INSERT INTO PERSON(
+			PERSON_ID,
+			PERSON_NAME,
+			PERSON_ID_CARD,
+			ORG_ID,
+			POS_ID,
+			PERSON_SN,
+			TEL,
+			NICK_NAME,
+			XL,
+			SEX,
+			AGE,
+			ADDR,
+			PERSON_DES,
+			SORT
+		)
+		VALUE(
+			#{personId, jdbcType=VARCHAR },
+			#{personName, jdbcType=VARCHAR },
+			#{personIdCard, jdbcType=VARCHAR },
+			#{orgId, jdbcType=VARCHAR },
+			#{posId, jdbcType=VARCHAR },
+			#{personSn, jdbcType=VARCHAR },
+			#{tel, jdbcType=VARCHAR },
+		    #{nickName, jdbcType=VARCHAR },
+			#{xl, jdbcType=VARCHAR },
+			#{sex, jdbcType=VARCHAR },
+			#{age, jdbcType=NUMERIC },
+			#{addr, jdbcType=VARCHAR },
+			#{personDes, jdbcType=VARCHAR },
+			<if test="@Ognl@isNotBlank(sort)">
+				#{sort,  jdbcType=NUMERIC  }
+			</if>
+			<if test="@Ognl@isBlank(sort)">
+				0
+			</if>
+		)
+	</insert>
+	
+	
+		<!--查询人员，可以根据条件查询-->
+	<select id="getPersons" resultType="com.exam.bean.Person">
+		select 
+			R.PERSON_ID,
+			R.PERSON_NAME,
+			R.PERSON_ID_CARD,
+			R.ORG_ID,
+			R.POS_ID,
+			S.ORG_NAME,
+			T.POS_NAME,
+			R.PERSON_SN,
+			R.TEL,
+			R.NICK_NAME,
+			R.XL,
+			R.SEX,
+			R.AGE,
+			R.ADDR,
+			R.PERSON_DES,
+			R.SORT
+	  from PERSON R
+	  join ORG S ON R.ORG_ID = S.ORG_ID
+	  join POS T ON R.POS_ID = T.POS_ID
+	 <where>
+	 </where>		
+		
+	</select>
+	
+	
+	<delete id="delPerson" parameterType="Map">
+		DELETE FROM PERSON WHERE PERSON_ID = #{personId}
+	</delete>
+	
+
+</mapper>

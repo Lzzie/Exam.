@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.dao.UserDao">
+	
+
+
+	
+	<!--增加用户-->
+	<insert id="addUser" parameterType="Map">
+	  <selectKey keyProperty="sort" resultType="java.lang.Long" order="BEFORE">
+		 	SELECT MAX(SORT)+1 SORT FROM USERS
+	  </selectKey>
+		INSERT INTO USERS(
+			USER_ID,
+			LOGIN_NAME,
+			NICK_NAME,
+			LOGIN_PWD,
+			PERSON_ID,
+			STATE,
+			CREATETIME,
+			CREATER,
+			SALT,
+			ENCRYPT_COUNT,
+			LEVEL,
+			USER_DES,
+			SORT
+		)
+		VALUE(
+			#{userId, jdbcType=VARCHAR },
+			#{loginName, jdbcType=VARCHAR },
+			#{nickName, jdbcType=VARCHAR },
+			#{loginPwd, jdbcType=VARCHAR },
+			#{personId, jdbcType=VARCHAR },
+			#{state, jdbcType=VARCHAR },
+			#{createtime, jdbcType=VARCHAR },
+			#{creater, jdbcType=VARCHAR },
+			#{salt, jdbcType=VARCHAR },
+			#{encryptCount, jdbcType=VARCHAR },
+			#{level, jdbcType=VARCHAR },
+			#{userDes, jdbcType=VARCHAR },
+			<if test="@Ognl@isNotBlank(sort)">
+				#{sort,  jdbcType=NUMERIC  }
+			</if>
+			<if test="@Ognl@isBlank(sort)">
+				0
+			</if>
+		)
+	</insert>
+	
+	
+	
+	
+	
+	
+			<!--查询用户列表，可以根据条件查询-->
+	<select id="getUsers" resultType="com.exam.bean.User">
+		select 
+			R.USER_ID,
+			R.LOGIN_NAME,
+			R.NICK_NAME,
+			R.PERSON_ID,
+			R.STATE,
+			R.CREATETIME,
+			R.CREATER,
+			R.SALT,
+			R.ENCRYPT_COUNT,
+			R.LEVEL,
+			R.USER_DES,
+			R.SORT
+	  from USERS R
+	</select>
+	
+	
+	<select id="getLoginUser" resultType="com.exam.bean.User">
+			select 
+				R.USER_ID,
+				R.LOGIN_NAME,
+				R.NICK_NAME,
+				R.PERSON_ID,
+				R.STATE,
+				R.CREATETIME,
+				R.CREATER,
+				R.SALT,
+				R.ENCRYPT_COUNT,
+				R.LEVEL,
+				R.USER_DES,
+				R.SORT
+		  from USERS R
+		  <where>
+		  	R.LOGIN_NAME=#{loginName} AND R.LOGIN_PWD = #{loginPwd}
+		  </where>
+	</select>
+	
+	
+	
+	<delete id="delUser" parameterType="Map">
+		DELETE FROM USERS WHERE USER_ID = #{userId}
+	</delete>
+	
+	
+	
+</mapper>

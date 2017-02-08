@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.dao.NodeDao">
+	
+	
+	<!--根据父节点的id查询所有子节点-->
+		<select id="getChildrenNodes" resultType="com.exam.bean.Node">	
+			select 
+				R.ORG_TYPE_ID ID,
+	  			R.ORG_TYPE_NAME TEXT,
+				(select count(1) from ORGTYPE t where R.ORG_TYPE_ID = T.ORG_TYPE_PARENT_ID) CHILD_COUNT
+		  from ORGTYPE R
+ 		  where  R.ORG_TYPE_PARENT_ID=#{parentId}
+		</select>
+		
+		
+		<!--根据组织的id查询子组织-->
+		<select id="getChildrenByOrgId" resultType="com.exam.bean.Node">	
+			select 
+				R.ORG_ID ID,
+	  			R.ORG_NAME TEXT,
+				(select count(1) from ORG t where R.ORG_ID = T.ORG_PARENT_ID) CHILD_COUNT
+		  from ORG R
+ 		  where  R.ORG_PARENT_ID=#{orgId}
+		</select>
+		
+		<!--根据组织机构的id查询子组织-->
+		<select id="getOrgNodes" resultType="com.exam.bean.Node">		
+			select 
+				R.ORG_ID ID,
+	  			R.ORG_NAME TEXT,
+				R.ORG_SN,
+				R.ORG_SHORT_NAME,
+				R.ORG_PARENT_ID,
+				R.ORG_TYPE_ID,
+				R.ORG_DES,
+				R.ORG_TEL,
+				R.ORG_ADDR,
+				R.SORT,
+				S.ORG_TYPE_NAME,
+				T.ORG_NAME  ORG_PARENT_NAME,
+				(select count(1) from ORG t where R.ORG_ID = T.ORG_PARENT_ID) CHILD_COUNT
+		  from ORG R
+			LEFT JOIN orgtype S ON S.ORG_TYPE_ID=R.ORG_TYPE_ID
+			LEFT JOIN org T ON T.ORG_ID=R.ORG_PARENT_ID
+ 		  <where>
+ 		  		<if test="@Ognl@isNotBlank(orgId)"> R.ORG_PARENT_ID=#{orgId} </if>
+ 		  	 <if test="@Ognl@isNotBlank(orgTypeId)"> AND R.ORG_TYPE_ID=#{orgTypeId}</if>
+ 		  </where>
+		</select>
+		
+		
+		
+
+</mapper>
